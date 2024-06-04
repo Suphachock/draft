@@ -65,9 +65,9 @@ class Model extends \Kotchasan\Model
             ->join('user_meta D', 'LEFT', array(array('D.member_id', 'U.id'), array('D.name', 'department')))
             ->join('reservation R', 'INNER', array('R.member_id', 'U.id'))
             ->join('reservation_data RD', 'INNER', array('RD.reservation_id', 'R.id'))
-            ->join('category C', 'INNER', array(array('RD.name', 'accessories'),array('C.category_id','RD.value')) )
+            ->join('category C', 'INNER', array(array('RD.value', 'C.category_id'), array('RD.name', 'C.type')))
             ->where(array('U.active', 1))
-            ->andWhere(array('C.type', 'accessories'))
+            ->order('RD.reservation_id ASC')
             ->cacheOn();
 
         foreach ($query->execute() as $item) {
@@ -76,8 +76,10 @@ class Model extends \Kotchasan\Model
                 $name = $item->name;
                 $mailto = $item->username;
                 $line_uid = $item->line_uid;
-                $rd_value = $item->value;
-                $reservation_value = $item->c_topic;
+                if ($item->value !=1) {
+                    $rd_value = $item->value;
+                    $reservation_value = $item->c_topic;
+                }
             } else {
                 // เจ้าหน้าที่
                 $emails[] = $item->name . '<' . $item->username . '>';
